@@ -1,7 +1,8 @@
 # PyGLViewer
 
 Framework developed for the ENS Course [...](...)
-Simple OpenGL viewer designed to have a quick visualization of the results of the simulation.
+
+This is a simple OpenGL viewer designed to have a quick visualization of the results of the simulations. The goal is *not* to do efficient/marvelous renderings, although you can tune a bit the viewer if you want.
 
 ## Author 
 
