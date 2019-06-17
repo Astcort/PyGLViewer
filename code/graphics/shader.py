@@ -6,29 +6,7 @@ import OpenGL.GL as GL
 ## Shader class
 # Class loading and destroying the shader programs
 class Shader:
-
-    @staticmethod
-    def _compileShader(shaderStr, shaderType):
-        ## Shader loader and compiler
-        # Load and compile the shader code.
-        # @param shaderStr   String either containing the code of the shader
-                           of the filepath to the shader
-        # @param shaderType  GL type indicating the shader type
-        
-        # Load and compile
-        shaderCode = open(shaderStr, 'r').read().decode() \
-                     if (os.path.exists(shaderStr)) else shaderStr
-        shader = GL.glCreateShader(shaderType)
-        GL.glShaderSource(shader, shaderCode)
-        GL.glCompileShader(shader)
-        # Check all is ok
-        status = GL.glGetShaderiv(shader, GL.GL_COMPILE_STATUS)
-        if not status:
-            log = GL.glGetShaderInfoLog(shader).decode('ascii')
-            GL.glDeleteShader(shader)
-            raise Exception("# Shader - Compilation failed : %s\n%s" % (shaderType, log))
-        return shader
-
+    
     def __init__(self, vertexShaderStr, fragmentShaderstr):
         ## Constructor
         # Compile and attach the shaders.
@@ -59,6 +37,29 @@ class Shader:
             self.glId = None
             raise Exception("# Shader - Shader program initialization failed : \n%s"
                             % log)
+
+    @staticmethod
+    def _compileShader(shaderStr, shaderType):
+        ## Shader loader and compiler
+        # Load and compile the shader code.
+        # @param shaderStr   String either containing the code of the shader
+                           of the filepath to the shader
+        # @param shaderType  GL type indicating the shader type
+        
+        # Load and compile
+        shaderCode = open(shaderStr, 'r').read().decode() \
+                     if (os.path.exists(shaderStr)) else shaderStr
+        shader = GL.glCreateShader(shaderType)
+        GL.glShaderSource(shader, shaderCode)
+        GL.glCompileShader(shader)
+        # Check all is ok
+        status = GL.glGetShaderiv(shader, GL.GL_COMPILE_STATUS)
+        if not status:
+            log = GL.glGetShaderInfoLog(shader).decode('ascii')
+            GL.glDeleteShader(shader)
+            raise Exception("# Shader - Compilation failed : %s\n%s" % (shaderType, log))
+        return shader
+
 
     def __del(self):
         ## Destrutor
