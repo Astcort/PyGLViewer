@@ -32,18 +32,14 @@ class Mesh2DRenderable(AbstractRenderable):
         # Positions
         # (doubles needed for the simulations)
         # Data storing
-        positionLocation = 0 # <--
+        self.locations["positions"] = 0 # <--
         self.data["positions"] = np.array(positions, np.float64)
         self.buffers["positions"] = GL.glGenBuffers(1)
         self.nbVertices = int(positions.size / 2)
+        # Send data
+        self.updatePositionsBuffer()
         # Drawing instructions
-        positions = np.array(self.data["positions"], np.float64, copy=False)
-        positionId = self.buffers["positions"]
-        GL.glEnableVertexAttribArray(positionLocation)
-        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, positionId)
-        GL.glBufferData(GL.GL_ARRAY_BUFFER, positions,
-                        GL.GL_STATIC_DRAW)
-        GL.glVertexAttribPointer(positionLocation, 2,
+        GL.glVertexAttribPointer(self.locations["positions"], 2,
                                  GL.GL_DOUBLE, False, 0, None)
 
         # Colours
@@ -54,16 +50,13 @@ class Mesh2DRenderable(AbstractRenderable):
             if (colours.size != (3 * self.nbVertices)):
                 raise Exception("Mesh2DRenderable - wrong buffer size")
         # Data
-        colourLocation = 1 # <--
+        self.locations["colours"] = 1 # <--
         self.data["colours"] = np.array(colours, np.float32)
         self.buffers["colours"] = GL.glGenBuffers(1)
+        # Send data
+        self.updateColourBuffer()
         # Drawing instructions
-        colours = np.array(self.data["colours"], np.float32, copy=False)
-        colourId = self.buffers["colours"]
-        GL.glEnableVertexAttribArray(colourLocation)
-        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, colourId)
-        GL.glBufferData(GL.GL_ARRAY_BUFFER, colours, GL.GL_STATIC_DRAW)
-        GL.glVertexAttribPointer(colourLocation, 3,
+        GL.glVertexAttribPointer(self.locations["colours"], 3,
                                  GL.GL_FLOAT, False, 0, None)
 
         # Indexed drawing or not ?
@@ -90,6 +83,74 @@ class Mesh2DRenderable(AbstractRenderable):
         GL.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, 0)
 
 
+    def updatePositionsBuffer(self):
+        ## Update the GPU colour buffer
+        # @param self
+        positionLocation = self.locations["positions"]
+        positions = np.array(self.data["positions"], np.float64, copy=False)
+        positionId = self.buffers["positions"]
+        GL.glEnableVertexAttribArray(positionLocation)
+        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, positionId)
+        GL.glBufferData(GL.GL_ARRAY_BUFFER, positions,
+                        GL.GL_STATIC_DRAW)
+        
+    def updateColourBuffer(self):
+        ## Update the GPU colour buffer
+        # @param self
+        colourLocation = self.locations["colours"]
+        colours = np.array(self.data["colours"], np.float32, copy=False)
+        colourId = self.buffers["colours"]
+        GL.glEnableVertexAttribArray(colourLocation)
+        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, colourId)
+        GL.glBufferData(GL.GL_ARRAY_BUFFER, colours, GL.GL_STATIC_DRAW)
+
+
+    def getNbVertices(self):
+        ## Getter on the number of vertices
+        return self.nbVertices
+    
+    def getPositions(self):
+        ## Getter on the positions
+        # @param self
+        # @return The positions
+        return self.data["positions"]
+    
+    def setPositions(self, newPos):
+        ## Setter on the positions & update the buffer
+        # @param self
+        # @param newPos
+        self.data["positions"] = newPos
+        self.updatePositionsBuffer()
+
+        
+    def getColours(self):
+        ## Getter on the colours
+        # @param self
+        # @return The colours
+        return self.data["colours"]
+    
+    def getColors(self):
+        ## Getter on the colours (US)
+        # @param self
+        # @return The colours
+        return self.getColours()
+    
+    def setColours(self, newCol):
+        ## Setter on the colours & update the buffer
+        # @param self
+        # @param newCol
+        self.data["colours"] = newCol
+        self.updateColourBuffer()
+    
+    
+    def setColors(self, newCol):
+        ## Setter on the colours (US) & update the buffer
+        # @param self
+        # @param newCol
+        self.setColours(newCol)
+    
+
+
     def draw(self, modelMatrix, viewMatrix, projectionMatrix,
              shaderProgram, primitive = GL.GL_TRIANGLES):
         ## Drawing function
@@ -100,13 +161,14 @@ class Mesh2DRenderable(AbstractRenderable):
         # @param shaderProgram
         # @param primitive
 
+        
         # Send uniforms
         names = ["modelMatrix",
                  "viewMatrix",
                  "projectionMatrix"]
         locations = {n: GL.glGetUniformLocation(shaderProgram.glId, n)
                      for n in names}
-        GL.glUseProgram(shaderProgram.glId)
+        GL.glUseProgram(shaderProgram.glId)       
 
         
         GL.glUniformMatrix4fv(locations["modelMatrix"], 1, True, modelMatrix)

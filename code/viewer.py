@@ -6,8 +6,8 @@ import glfw
 import numpy as np
 from itertools import cycle
 
-from .camera import Camera
-from .shader import Shader
+from graphics.camera import Camera
+from graphics.shader import Shader
 
 ## GLFW viewer 
 class Viewer:
@@ -54,6 +54,10 @@ class Viewer:
         # Renderables
         self.renderables = []
 
+        # Dynamic systems
+        self.dynamicOn = True
+        self.dynamicSystems = []
+
         # Trackball
         self.trackball = Camera(self.window)
 
@@ -73,6 +77,11 @@ class Viewer:
             viewMatrix = self.trackball.viewMatrix()
             projectionMatrix = self.trackball.projectionMatrix(windowSize)
 
+            # Animate
+            if self.dynamicOn:
+                for ds in self.dynamicSystems:
+                    ds.step()
+
             # Draw
             for renderable in self.renderables:
                 renderable.draw(modelMatrix, viewMatrix, projectionMatrix,
@@ -87,8 +96,14 @@ class Viewer:
         ## Add new renderables to render
         # @param self
         # @param renderables
+        self.renderables.extend(renderables) 
         
-        self.renderables.extend(renderables)
+
+    def addDynamicSystem(self, *ds):
+        ## Add new renderables to render
+        # @param self
+        # @param ds
+        self.dynamicSystems.extend(ds)
         
 
     def keyCallback(self, win, key, scancode, action, mods):

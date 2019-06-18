@@ -5,7 +5,7 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 
 
-## Class defining an object to render
+## Abstract class defining an object to render
 class AbstractRenderable(metaclass=ABCMeta):
     
     def __init__(self):
@@ -18,6 +18,7 @@ class AbstractRenderable(metaclass=ABCMeta):
         # Buffers and data in a dict
         self.data = {}
         self.buffers = {}
+        self.locations = {}
 
     @abstractmethod
     def draw(self, modelMatrix, viewMatrix, projectionMatrix,
@@ -25,6 +26,7 @@ class AbstractRenderable(metaclass=ABCMeta):
         ## Call to draw
         # @param self
         pass
+
 
     def __del__(self):
         ## Desctructor
