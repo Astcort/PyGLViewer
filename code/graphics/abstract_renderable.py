@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 #-*- coding: utf-8 -*-
 import OpenGL.GL as GL
+from abc import ABCMeta, abstractmethod
+import numpy as np
 
 
 ## Class defining an object to render
-class AbstractRenderable:
+class AbstractRenderable(metaclass=ABCMeta):
     
     def __init__(self):
         ## Constructor
@@ -18,7 +20,8 @@ class AbstractRenderable:
         self.buffers = {}
 
     @abstractmethod
-    def draw(self):
+    def draw(self, modelMatrix, viewMatrix, projectionMatrix,
+             shaderProgram, primitive = GL.GL_TRIANGLES):
         ## Call to draw
         # @param self
         pass
@@ -28,6 +31,6 @@ class AbstractRenderable:
         # Release the buffers
         # @param self
         if self.glId is not None:
-            GL.glDeleteVertexArrays(1, [self.glId])
+            GL.glDeleteVertexArrays(1, np.array([self.glId]))
             GL.glDeleteBuffers(len(self.buffers),
-                               [buf for buf in self.buffers.values()])
+                               np.array([buf for buf in self.buffers.values()]))

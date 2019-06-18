@@ -7,14 +7,12 @@ import OpenGL.GL as GL
 # Class loading and destroying the shader programs
 class Shader:
     
-    def __init__(self, vertexShaderStr, fragmentShaderstr):
+    def __init__(self, vertexShaderStr, fragmentShaderStr):
         ## Constructor
         # Compile and attach the shaders.
         # @param self 
-        # @param vertexShaderStr    String either containing the code of the vertex 
-        #                           shader or the filepath to the code
-        # @param fragmentShaderStr  String either containing the code of the 
-        #                           fragment shader or the filepath to the code
+        # @param vertexShaderStr    String either containing the filepath to the shader
+        # @param fragmentShaderStr  String either containing the filepath to the shader
 
         # Compile the shaders
         vertShader = self._compileShader(vertexShaderStr, GL.GL_VERTEX_SHADER)
@@ -35,20 +33,23 @@ class Shader:
             log = GL.glGetProgramInfoLog(self.glId).decode('ascii')
             GL.glDeleteProgram(self.glId)
             self.glId = None
-            raise Exception("# Shader - Shader program initialization failed : \n%s"
-                            % log)
+            strError = "Shader - Shader program initialization failed : \n" + str(log)
+            raise Exception(strError)
 
     @staticmethod
     def _compileShader(shaderStr, shaderType):
         ## Shader loader and compiler
         # Load and compile the shader code.
-        # @param shaderStr   String either containing the code of the shader
-                           of the filepath to the shader
+        # @param shaderStr   String either containing the filepath to the shader
         # @param shaderType  GL type indicating the shader type
         
         # Load and compile
-        shaderCode = open(shaderStr, 'r').read().decode() \
-                     if (os.path.exists(shaderStr)) else shaderStr
+        shaderCode = None
+        if (os.path.exists(shaderStr)) :
+            shaderCode = open(shaderStr, 'r').read()
+        else:
+            strError = "Shader - Shader not found : " + str(shaderStr)
+            raise Exception(strError)
         shader = GL.glCreateShader(shaderType)
         GL.glShaderSource(shader, shaderCode)
         GL.glCompileShader(shader)
@@ -57,7 +58,9 @@ class Shader:
         if not status:
             log = GL.glGetShaderInfoLog(shader).decode('ascii')
             GL.glDeleteShader(shader)
-            raise Exception("# Shader - Compilation failed : %s\n%s" % (shaderType, log))
+            strError = "Shader - Compilation failed : " + str(shaderType) \
+                       + "\n" + str(log)
+            raise Exception(strError)
         return shader
 
 
