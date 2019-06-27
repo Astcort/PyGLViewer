@@ -25,9 +25,8 @@ class DummyDynamicSystem(AbstractDynamicSystem):
 
     def step(self):
 
-        self.mesh.setColours((self.it / self.period) * self.colours)
-        self.mesh.setPositions(self.mesh.getPositions() \
-                               + self.delta * self.translationVector)
+        self.mesh.colours = (self.it / self.period) * self.colours
+        self.mesh.positions += self.delta * self.translationVector
         
         
         self.it += self.delta

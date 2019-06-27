@@ -15,8 +15,7 @@ class AbstractRenderable(metaclass=ABCMeta):
 
         # Id of the VAO
         self.glId = None
-        # Buffers and data in a dict
-        self.data = {}
+        # Buffers in a dict
         self.buffers = {}
         self.locations = {}
 
