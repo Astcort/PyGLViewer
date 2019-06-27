@@ -12,12 +12,19 @@ from graphics.shader import Shader
 ## GLFW viewer 
 class Viewer:
 
-    def __init__(self, width=1280, height=960,
-                 bgColor = np.array([0.3, 0.3, 0.3])):
+    def __init__(self, width = 1280, height = 960,
+                 bgColor = np.array([0.3, 0.3, 0.3]),
+                 maxFPS = 60):
         ## Init the window
         # @param self
         # @param width
         # @param height
+        # @param bgColor
+        # @param maxFPS   Set to 0 to unblock the FPS
+
+        # FPS
+        self.maxFPS = maxFPS
+        self.timeLastUpdate = glfw.get_time()
 
         # OpenGL parameters
         glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 3)
@@ -69,6 +76,14 @@ class Viewer:
         # @param self
         
         while not glfw.window_should_close(self.window):
+
+            # FPS Limiter
+            if (self.maxFPS > 0):
+                timeNewUpddate = glfw.get_time()
+                if (timeNewUpddate < (self.timeLastUpdate + 1. / self.maxFPS)):
+                    continue
+                self.timeLastUpdate = timeNewUpddate
+
             # Clear
             GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
             # MVP
