@@ -67,8 +67,12 @@ class Mesh2DRenderable(AbstractRenderable):
     def updatePositionsBuffer(self):
         ## Update the GPU colour buffer
         # @param self
+        if (not self.mesh.positionsUpdated):
+            return
+        self.mesh.positionsUpdated = False
         positionLocation = self.locations["positions"]
-        positions = np.array(self.mesh.getPositions(), np.float64, copy=False)
+        positions = np.array(self.mesh.constPositions, \
+                             np.float64, copy=False)
         positionId = self.buffers["positions"]
         GL.glEnableVertexAttribArray(positionLocation)
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, positionId)
@@ -78,35 +82,17 @@ class Mesh2DRenderable(AbstractRenderable):
     def updateColoursBuffer(self):
         ## Update the GPU colour buffer
         # @param self
+        if (not self.mesh.coloursUpdated):
+            return
+        self.mesh.coloursUpdated = False
         colourLocation = self.locations["colours"]
-        colours = np.array(self.mesh.getColours(), np.float32, copy=False)
+        colours = np.array(self.mesh.constColours, \
+                           np.float32, copy=False)
         colourId = self.buffers["colours"]
         GL.glEnableVertexAttribArray(colourLocation)
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, colourId)
         GL.glBufferData(GL.GL_ARRAY_BUFFER, colours, GL.GL_STATIC_DRAW)
-
-
-    def getNbVertices(self):
-        ## Getter on the number of vertices
-        return self.mesh.getNbVertices()
     
-    def getPositions(self):
-        ## Getter on the positions
-        # @param self
-        # @return The positions
-        return self.mesh.getPositions()
-    
-    def getColours(self):
-        ## Getter on the colours
-        # @param self
-        # @return The colours
-        return self.mesh.getColours()
-    
-    def getColors(self):
-        ## Getter on the colours (US)
-        # @param self
-        # @return The colours
-        return self.getColours()
 
 
     def draw(self, modelMatrix, viewMatrix, projectionMatrix,

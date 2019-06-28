@@ -5,7 +5,7 @@ import numpy as np
 
 
 ## Class defining a 2D rod parameterized by the nodes positions
-class Rod2D:
+class Rod2D(object):
 
     def __init__(self, positions, colours = None):
         ## Constructor
@@ -26,20 +26,53 @@ class Rod2D:
             self.colours = np.array(colours, np.float32)
             if (colours.size != (3 * self.nbVertices)):
                 raise Exception("Wrong buffer size")
+
+        # Fields to lighten the redraw
+        self.positionsUpdated = True
+        self.coloursUpdated = True
+
+
+
+    def __getattribute__(self, name):
+        ## Attribute accessor
+        # Overload it to have "const" accessor to the posititions and colours :
+        # * positions or colours : "non-const" accessor,
+        #     trigger the buffer update
+        # * constPositions or constColours  : "const" accessor,
+        #     does not trigger the buffer update
+
+        if (name == "positions"):
+            self.positionsUpdated = True
+        elif (name == "constPositions"):
+            return object.__getattribute__(self, "positions")
+        elif ((name == "colours") or (name == "colors")):
+            self.coloursUpdated = True
+            return object.__getattribute__(self, "colours")
+        elif ((name == "constColours") or (name == "constColors")):
+            return object.__getattribute__(self, "colours")
+        
+        return object.__getattribute__(self, name)
             
-    def getNbVertices(self):
-        ## Getter on the number of vertices
-        return self.nbVertices
-    
-    def getPositions(self):
-        ## Getter on the positions
-        # @param self
-        # @return The positions
-        return self.positions
-    
-    def getColours(self):
-        ## Getter on the colours
-        # @param self
-        # @return The colours
-        return self.colours
-    
+
+
+    def __setattr__(self, name, value):
+        ## Attribute setter
+        # Overload it to have "const" accessor to the posititions and colours :
+        # * positions or colours : "non-const" accessor,
+        #     set trigger the buffer update
+        # * constPositions or constColours  : "const" accessor,
+        #     fails
+
+        if (name == "positions"):
+            self.positionsUpdated = True
+        elif ((name == "colours") or (name == "colors")):
+            self.coloursUpdated = True
+            object.__setattr__(self, "colours", value)
+            return
+        elif (name == "constPositions") or \
+             (name == "constColours") or (name == "constColors"):
+            raise Exception("Tried to set a const field")
+        
+        object.__setattr__(self, name, value)
+            
+

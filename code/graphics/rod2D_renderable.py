@@ -29,7 +29,8 @@ class Rod2DRenderable(Mesh2DRenderable):
         self.thickness = thickness
 
         # Init mesh
-        nbVerticesRod = rod.getNbVertices();
+        nbVerticesRod = rod.nbVertices
+        print(rod.nbVertices)
         nbVerticesMesh = 4 * (nbVerticesRod - 1)
         positions = np.zeros(2 * nbVerticesMesh, np.float64)
         colours = np.zeros(3 * nbVerticesMesh, np.float32)
@@ -68,11 +69,11 @@ class Rod2DRenderable(Mesh2DRenderable):
         # @param self
 
         # Data
-        positions = self.rod.getPositions()
-        meshPositions = self.mesh.getPositions()
+        positions = self.rod.constPositions
+        meshPositions = self.mesh.constPositions
 
         currVertex = positions[0:2]
-        for vId in range(1, self.rod.getNbVertices()):
+        for vId in range(1, self.rod.nbVertices):
             nextVertex = positions[2*vId:2*(vId+1)]
 
             tg = np.array([-nextVertex[1] + currVertex[1],
@@ -95,16 +96,16 @@ class Rod2DRenderable(Mesh2DRenderable):
         # @param self
 
         # Data
-        colours = self.rod.getColours()
-        meshColours = self.mesh.getColours()
+        colours = self.rod.constColours
+        meshColours = self.mesh.constColours
 
         # Border case
         col = colours[0:3]
         meshColours[0:3] = col
         meshColours[3:6] = col
-        for vId in range(1, self.rod.getNbVertices()):
+        for vId in range(1, self.rod.nbVertices):
             col = colours[3 * vId: 3 * vId + 3]
-            rg = 2 if (vId == self.rod.getNbVertices() - 1) else 4
+            rg = 2 if (vId == self.rod.nbVertices - 1) else 4
             for i in range(rg):
                 vmId = 4 * vId - 2 + i
                 meshColours[3 * vmId: 3 * vmId + 3] = col
@@ -114,37 +115,20 @@ class Rod2DRenderable(Mesh2DRenderable):
     def updatePositionsBuffer(self):
         ## Update the GPU colour buffer
         # @param self
+        if (not self.rod.positionsUpdated):
+            return
+        self.rod.positionsUpdated = False
         self.updateMeshPositions()
         super().updatePositionsBuffer()
         
     def updateColoursBuffer(self):
         ## Update the GPU colour buffer
         # @param self
+        if (not self.rod.coloursUpdated):
+            return
+        self.rod.coloursUpdated = False
         self.updateMeshColours()
         super().updateColoursBuffer()
         
-    def getNbVertices(self):
-        ## Getter on the number of vertices
-        return self.rod.getNbVertices()
-    
-    def getPositions(self):
-        ## Getter on the positions
-        # @param self
-        # @return The positions
-        return self.rod.getPositions()
-    
-    def getColours(self):
-        ## Getter on the colours
-        # @param self
-        # @return The colours
-        return self.rod.getColours()
-
-    def getColors(self):
-        ## Getter on the colours (US)
-        # @param self
-        # @return The colours
-        return self.getColours()
-
-    
     def __del__(self):
         super().__del__()
