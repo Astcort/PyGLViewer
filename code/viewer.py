@@ -77,34 +77,38 @@ class Viewer:
         
         while not glfw.window_should_close(self.window):
 
-            # FPS Limiter
-            if (self.maxFPS > 0):
-                timeNewUpddate = glfw.get_time()
-                if (timeNewUpddate < (self.timeLastUpdate + 1. / self.maxFPS)):
-                    continue
-                self.timeLastUpdate = timeNewUpddate
+            try:
+                # FPS Limiter
+                if (self.maxFPS > 0):
+                    timeNewUpddate = glfw.get_time()
+                    if (timeNewUpddate < (self.timeLastUpdate + 1. / self.maxFPS)):
+                        continue
+                    self.timeLastUpdate = timeNewUpddate
 
-            # Clear
-            GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
-            # MVP
-            windowSize = glfw.get_window_size(self.window)
-            modelMatrix = np.identity(4, dtype="float")
-            viewMatrix = self.trackball.viewMatrix()
-            projectionMatrix = self.trackball.projectionMatrix(windowSize)
+                # Clear
+                GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+                # MVP
+                windowSize = glfw.get_window_size(self.window)
+                modelMatrix = np.identity(4, dtype="float")
+                viewMatrix = self.trackball.viewMatrix()
+                projectionMatrix = self.trackball.projectionMatrix(windowSize)
 
-            # Animate
-            if self.dynamicOn:
-                for ds in self.dynamicSystems:
-                    ds.step()
+                # Animate
+                if self.dynamicOn:
+                    for ds in self.dynamicSystems:
+                        ds.step()
 
-            # Draw
-            for renderable in self.renderables:
-                renderable.draw(modelMatrix, viewMatrix, projectionMatrix,
-                                self.shaderProgram)
-            glfw.swap_buffers(self.window)
+                # Draw
+                for renderable in self.renderables:
+                    renderable.draw(modelMatrix, viewMatrix, projectionMatrix,
+                                    self.shaderProgram)
+                glfw.swap_buffers(self.window)
 
-            # Events
-            glfw.poll_events()
+                # Events
+                glfw.poll_events()
+                
+            except KeyboardInterrupt:
+                glfw.set_window_should_close(self.window, True)
             
 
     def addRenderable(self, *renderables):
@@ -129,6 +133,7 @@ class Viewer:
         # "A" to go left
         # "S" to go down
         # "D" to go right
+        # "Enter" to pause/play the animations
         #
         # @param self
         # @param win
@@ -143,6 +148,9 @@ class Viewer:
             if key == glfw.KEY_ESCAPE or key == glfw.KEY_Q:
                 glfw.set_window_should_close(self.window, True)
                 return
+
+            if key == glfw.KEY_ENTER:
+                self.dynamicOn = not self.dynamicOn
             
             if key == glfw.KEY_T:
                 GL.glPolygonMode(GL.GL_FRONT_AND_BACK, next(self.fillModes))
