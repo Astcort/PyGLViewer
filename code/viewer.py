@@ -4,6 +4,7 @@
 import OpenGL.GL as GL
 import glfw
 import numpy as np
+import time
 from itertools import cycle
 
 from graphics.camera import Camera
@@ -14,17 +15,30 @@ class Viewer:
 
     def __init__(self, width = 1280, height = 960,
                  bgColor = np.array([0.3, 0.3, 0.3]),
-                 maxFPS = 60):
+                 maxFPS = 60,
+                 offline = False,
+                 frameByFrame = False):
         ## Init the window
         # @param self
         # @param width
         # @param height
         # @param bgColor
-        # @param maxFPS   Set to 0 to unblock the FPS
+        # @param maxFPS        Set to 0 to unblock the FPS
+        # @param offline       Set the "offline" mode : only draw when asked
+        #                      (useful for doing computations only)
+        # @param framebyFrame  Set the frame by frame mode
 
         # FPS
         self.maxFPS = maxFPS
         self.timeLastUpdate = glfw.get_time()
+
+        # "Offline mode"
+        self.offline = offline
+        self.requestDraw = False
+
+        # Frame by frame
+        self.frameByFrame = frameByFrame
+        self.requestFrame = False
 
         # OpenGL parameters
         glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 3)
@@ -86,23 +100,29 @@ class Viewer:
                         continue
                     self.timeLastUpdate = timeNewUpddate
 
-                # Clear
-                GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
-                # MVP
-                windowSize = glfw.get_window_size(self.window)
-                viewMatrix = self.camera.viewMatrix()
-                projectionMatrix = self.camera.projectionMatrix(windowSize)
+                if (not self.frameByFrame) or (self.requestFrame):
+                    
+                    self.requestFrame = False
 
-                # Animate
-                if self.dynamicOn:
-                    for ds in self.dynamicSystems:
-                        ds.step()
+                    # Clear
+                    GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+                    # MVP
+                    windowSize = glfw.get_window_size(self.window)
+                    viewMatrix = self.camera.viewMatrix()
+                    projectionMatrix = self.camera.projectionMatrix(windowSize)
 
-                # Draw
-                for renderable in self.renderables:
-                    renderable.draw(modelMatrix, viewMatrix, projectionMatrix,
-                                    self.shaderProgram)
-                glfw.swap_buffers(self.window)
+                    # Animate
+                    if self.dynamicOn:
+                        for ds in self.dynamicSystems:
+                            ds.step()
+
+                    # Draw
+                    if (not self.offline) or (self.requestDraw):
+                        self.requestDraw = False
+                        for renderable in self.renderables:
+                            renderable.draw(modelMatrix, viewMatrix, projectionMatrix,
+                                            self.shaderProgram)
+                        glfw.swap_buffers(self.window)
 
                 # Events
                 glfw.poll_events()
@@ -127,13 +147,21 @@ class Viewer:
 
     def keyCallback(self, win, key, scancode, action, mods):
         ## Key callback
+        # NB : Doc for AZERTY keyboard
         # "Q" or echap to quit
         # "T" to toggle the rendering mode
         # "W" to go up
         # "A" to go left
         # "S" to go down
         # "D" to go right
+        #
         # "Enter" to pause/play the animations
+        #
+        # "O" to toggle the "offline" mode
+        # "P" to ask to draw in the "offline" mode
+        #
+        # "F" to toggle the frame by frame mode
+        # "G" to compute a frame in the frame by frame mode
         #
         # @param self
         # @param win
@@ -147,16 +175,30 @@ class Viewer:
             
             if key == glfw.KEY_ESCAPE or key == glfw.KEY_Q:
                 glfw.set_window_should_close(self.window, True)
-                return
 
-            if key == glfw.KEY_ENTER:
+            elif key == glfw.KEY_ENTER:
                 self.dynamicOn = not self.dynamicOn
             
-            if key == glfw.KEY_T:
+            elif key == glfw.KEY_T:
                 GL.glPolygonMode(GL.GL_FRONT_AND_BACK, next(self.fillModes))
-                return
+
+            elif key == glfw.KEY_O:
+                self.offline = not self.offline
+                if (self.offline):
+                    self.requestDraw = False
+
+            elif key == glfw.KEY_P:
+                self.requestDraw = True
+                
+            elif key == glfw.KEY_F:
+                self.frameByFrame = not self.frameByFrame
+                if (self.frameByFrame):
+                    self.requestFrame = False
+
+            elif key == glfw.KEY_G:
+                self.requestFrame = True
             
-            if (key == glfw.KEY_W) or (key == glfw.KEY_A) \
+            elif (key == glfw.KEY_W) or (key == glfw.KEY_A) \
                or (key == glfw.KEY_S) or (key == glfw.KEY_D):
                 oldMousePos = self.camera.mousePos
                 if key == glfw.KEY_W:
