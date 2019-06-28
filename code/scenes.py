@@ -46,9 +46,28 @@ def dynamicTest(viewer):
                         1, 2, 3])  # Second triangle
 
     squareMesh = Mesh2D(positions, indices, colours)
-    squareMeshRenderable = Mesh2DRenderable(squareMesh)
-    
-    viewer.addRenderable(squareMeshRenderable)
-
     dyn = DummyDynamicSystem(squareMesh)
     viewer.addDynamicSystem(dyn)
+    
+    squareMeshRenderable = Mesh2DRenderable(squareMesh)
+    viewer.addRenderable(squareMeshRenderable)
+
+
+
+def rodTest(viewer):
+
+    positions = np.array([-1., 1.,
+                          -1., 0.,
+                          -0.5, -0.25],
+                         np.float64)
+    colours = np.array([1., 0., 0.,
+                        0., 1., 0.,
+                        0., 0., 1.])
+
+    rod = Rod2D(positions, colours)
+    #dyn = DummyDynamicSystem(rod)
+    #viewer.addDynamicSystem(dyn)
+
+    rodRenderable = Rod2DRenderable(rod, 0.005)
+    viewer.addRenderable(rodRenderable)
+    

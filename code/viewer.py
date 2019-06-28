@@ -69,7 +69,7 @@ class Viewer:
         self.trackball = Camera(self.window)
 
         # Render mode
-        self.fillModes = cycle([GL.GL_LINE, GL.GL_POINT, GL.GL_FILL])
+        self.fillModes = cycle([GL.GL_LINE, GL.GL_FILL])
 
     def run(self):
         ## Main loop

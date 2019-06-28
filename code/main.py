@@ -15,9 +15,10 @@ def main():
                   bgColor = np.array([0.4, 0.4, 0.4]))
 
     # Loading the scene
-    #baseTest(viewer)
+    
     #indexedTest(viewer)
     dynamicTest(viewer)
+    rodTest(viewer)
     
     # Main loop
     viewer.run()

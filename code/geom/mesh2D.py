@@ -2,11 +2,12 @@
 #-*- coding: utf-8 -*-
 
 import numpy as np
+from .rod2D import Rod2D
 
 
 
 ## Class defining a 2D mesh
-class Mesh2D:
+class Mesh2D(Rod2D):
 
     def __init__(self, positions, indices, colours = None):
         ## Constructor
@@ -16,31 +17,6 @@ class Mesh2D:
         # @param colours    1-D Numpy array concatenating the
         #                   vertices colours (r, g, b)
 
-        # Register the data and make sure of the types
-        self.nbVertices = int(positions.size / 2)
-        self.positions = np.array(positions, np.float64)
+        super().__init__(positions, colours)        
         self.indices = np.array(indices, np.int32)
-        self.colours = None
-        if (colours is None):
-            self.colours = 0.5 * np.ones(3 * self.nbVertices, dtype=np.float32)
-        else:
-            self.colours = np.array(colours, np.float32)
-            if (colours.size != (3 * self.nbVertices)):
-                raise Exception("Mesh - wrong buffer size")
-            
-    def getNbVertices(self):
-        ## Getter on the number of vertices
-        return self.nbVertices
-    
-    def getPositions(self):
-        ## Getter on the positions
-        # @param self
-        # @return The positions
-        return self.positions
-    
-    def getColours(self):
-        ## Getter on the colours
-        # @param self
-        # @return The colours
-        return self.colours
     
