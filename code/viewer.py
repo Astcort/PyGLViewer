@@ -65,8 +65,8 @@ class Viewer:
         self.dynamicOn = True
         self.dynamicSystems = []
 
-        # Trackball
-        self.trackball = Camera(self.window)
+        # Camera
+        self.camera = Camera(self.window)
 
         # Render mode
         self.fillModes = cycle([GL.GL_LINE, GL.GL_FILL])
@@ -75,6 +75,7 @@ class Viewer:
         ## Main loop
         # @param self
         
+        modelMatrix = np.identity(4, dtype="float")
         while not glfw.window_should_close(self.window):
 
             try:
@@ -89,9 +90,8 @@ class Viewer:
                 GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
                 # MVP
                 windowSize = glfw.get_window_size(self.window)
-                modelMatrix = np.identity(4, dtype="float")
-                viewMatrix = self.trackball.viewMatrix()
-                projectionMatrix = self.trackball.projectionMatrix(windowSize)
+                viewMatrix = self.camera.viewMatrix()
+                projectionMatrix = self.camera.projectionMatrix(windowSize)
 
                 # Animate
                 if self.dynamicOn:
@@ -158,14 +158,14 @@ class Viewer:
             
             if (key == glfw.KEY_W) or (key == glfw.KEY_A) \
                or (key == glfw.KEY_S) or (key == glfw.KEY_D):
-                oldMousePos = self.trackball.mousePos
+                oldMousePos = self.camera.mousePos
                 if key == glfw.KEY_W:
-                    self.trackball.mousePos = oldMousePos + np.array([0., -delta])
+                    self.camera.mousePos = oldMousePos + np.array([0., -delta])
                 elif key == glfw.KEY_A:
-                    self.trackball.mousePos = oldMousePos + np.array([-delta, 0.])
+                    self.camera.mousePos = oldMousePos + np.array([delta, 0.])
                 elif key == glfw.KEY_S:
-                    self.trackball.mousePos = oldMousePos + np.array([0., delta])
+                    self.camera.mousePos = oldMousePos + np.array([0., delta])
                 else:
-                    self.trackball.mousePos = oldMousePos + np.array([delta, 0.])
-                self.trackball.translate(oldMousePos, self.trackball.mousePos)
+                    self.camera.mousePos = oldMousePos + np.array([-delta, 0.])
+                self.camera.translate(oldMousePos, self.camera.mousePos)
                 

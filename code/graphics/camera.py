@@ -9,7 +9,7 @@ import math
 ## Simple 2D Camera
 class Camera:
 
-    def __init__(self, window, distance = 5.):
+    def __init__(self, window, distance = 2.):
         ## Constructor
         # Link the mouse callback to the camera
         # @param self
@@ -64,7 +64,7 @@ class Camera:
         # @param self
         # @param oldPos
         # @param newPos
-        translateSpeed = 1.e-3
+        translateSpeed = 2.e-3
         self.pos += translateSpeed * (newPos - oldPos) * self.distance
 
     def viewMatrix(self):
@@ -78,7 +78,7 @@ class Camera:
 
     def projectionMatrix(self, windowSize):
         ## Compute the projection matrix
-        # http://www.songho.ca/opengl/gl_projectionmatrix.html#perspective
+        # http://www.songho.ca/opengl/gl_projectionmatrix.html
         # @param self
         # @param windowSize
         # @return The projection matirx
@@ -88,11 +88,17 @@ class Camera:
         zFar = 100 * self.distance
 
         aspectRatio = windowSize[0] / windowSize[1]
-        viewAngle = 35.
 
+        """
         # Perspective matrix
+        viewAngle = 35.
         sY = 1. / (math.tan(math.radians(viewAngle) / 2.))
         sX = sY / aspectRatio
+        """
+        # Orthographic
+        sY = 1.
+        sX = 1. / aspectRatio
+        
         zE = (zNear + zFar) / (zNear - zFar)
         zN = 2. * zFar * zNear / (zNear - zFar)
         

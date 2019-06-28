@@ -30,7 +30,6 @@ class Rod2DRenderable(Mesh2DRenderable):
 
         # Init mesh
         nbVerticesRod = rod.nbVertices
-        print(rod.nbVertices)
         nbVerticesMesh = 4 * (nbVerticesRod - 1)
         positions = np.zeros(2 * nbVerticesMesh, np.float64)
         colours = np.zeros(3 * nbVerticesMesh, np.float32)
