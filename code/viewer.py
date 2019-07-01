@@ -7,6 +7,8 @@ import numpy as np
 import time
 from itertools import cycle
 
+from PIL import Image
+
 from graphics.camera import Camera
 from graphics.shader import Shader
 
@@ -40,6 +42,11 @@ class Viewer:
         self.frameByFrame = frameByFrame
         self.requestFrame = False
 
+        # Screenshot
+        self.requestScreenshot = False
+        self.screenshotName = "screenshot_"
+        self.screenshotId = 0
+
         # OpenGL parameters
         glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 3)
         glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 3)
@@ -48,6 +55,8 @@ class Viewer:
         glfw.window_hint(glfw.RESIZABLE, False)
 
         # Create the window
+        self.width = width
+        self.height = height
         self.window = glfw.create_window(width, height,
                                          'Viewer', None, None)
         glfw.make_context_current(self.window)
@@ -124,6 +133,18 @@ class Viewer:
                                             self.shaderProgram)
                         glfw.swap_buffers(self.window)
 
+                        if (self.requestScreenshot):
+                            self.requestScreenshot = False
+
+                            GL.glReadBuffer(GL.GL_FRONT)
+                            pixels = GL.glReadPixels(0, 0,\
+                                                     self.width, self.height, \
+                                                     GL.GL_RGB, GL.GL_UNSIGNED_BYTE)
+                            image = Image.frombytes("RGB", (self.width, self.height), pixels)
+                            image = image.transpose( Image.FLIP_TOP_BOTTOM)
+                            filename = self.screenshotName + str(self.screenshotId).zfill(9) + ".png"
+                            image.save(filename)
+                            self.screenshotId += 1
                 # Events
                 glfw.poll_events()
                 
@@ -150,6 +171,7 @@ class Viewer:
         # NB : Doc for AZERTY keyboard
         # "Q" or echap to quit
         # "T" to toggle the rendering mode
+        #
         # "W" to go up
         # "A" to go left
         # "S" to go down
@@ -162,6 +184,8 @@ class Viewer:
         #
         # "F" to toggle the frame by frame mode
         # "G" to compute a frame in the frame by frame mode
+        #
+        # "C" to take a screenshot
         #
         # @param self
         # @param win
@@ -197,6 +221,9 @@ class Viewer:
 
             elif key == glfw.KEY_G:
                 self.requestFrame = True
+
+            elif key == glfw.KEY_C:
+                self.requestScreenshot = True
             
             elif (key == glfw.KEY_W) or (key == glfw.KEY_A) \
                or (key == glfw.KEY_S) or (key == glfw.KEY_D):

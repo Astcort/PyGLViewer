@@ -1,3 +1,6 @@
+# Custom files
+code/screenshot*.png
+
 # Emacs files
 *~
 
