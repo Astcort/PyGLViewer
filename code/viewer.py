@@ -19,16 +19,21 @@ class Viewer:
                  bgColor = np.array([0.3, 0.3, 0.3]),
                  maxFPS = 60,
                  offline = False,
-                 frameByFrame = False):
+                 frameByFrame = False,
+                 recordingFreq = 0):
         ## Init the window
         # @param self
         # @param width
         # @param height
         # @param bgColor
-        # @param maxFPS        Set to 0 to unblock the FPS
-        # @param offline       Set the "offline" mode : only draw when asked
-        #                      (useful for doing computations only)
-        # @param framebyFrame  Set the frame by frame mode
+        # @param maxFPS         Set to 0 to unblock the FPS
+        # @param offline        Set the "offline" mode : only draw when asked
+        #                       (Default : False - disabled)
+        #                       (useful for doing computations only)
+        # @param framebyFrame   Set the frame by frame mode
+        #                       (Default : False - disabled)
+        # @param recordingFreq  Recording mode : takes a screenshot every recordingFreq frame
+        #                       (Default : 0 - disabled)
 
         # FPS
         self.maxFPS = maxFPS
@@ -46,6 +51,9 @@ class Viewer:
         self.requestScreenshot = False
         self.screenshotName = "screenshot_"
         self.screenshotId = 0
+        self.recordingFreq = recordingFreq
+        self.autoScreenshot = (recordingFreq > 0)
+        self.screenshotFrameCounter = 0
 
         # OpenGL parameters
         glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 3)
@@ -133,9 +141,13 @@ class Viewer:
                                             self.shaderProgram)
                         glfw.swap_buffers(self.window)
 
-                        if (self.requestScreenshot):
+                        if (self.requestScreenshot) \
+                           or ((self.autoScreenshot) and \
+                               (self.recordingFreq > 0) and \
+                               (self.screenshotFrameCounter == 0)):
+                            
                             self.requestScreenshot = False
-
+                            
                             GL.glReadBuffer(GL.GL_FRONT)
                             pixels = GL.glReadPixels(0, 0,\
                                                      self.width, self.height, \
@@ -145,6 +157,10 @@ class Viewer:
                             filename = self.screenshotName + str(self.screenshotId).zfill(9) + ".png"
                             image.save(filename)
                             self.screenshotId += 1
+                        
+                        if (self.recordingFreq > 0):
+                            self.screenshotFrameCounter \
+                                = (self.screenshotFrameCounter + 1) % self.recordingFreq
                 # Events
                 glfw.poll_events()
                 
@@ -185,7 +201,8 @@ class Viewer:
         # "F" to toggle the frame by frame mode
         # "G" to compute a frame in the frame by frame mode
         #
-        # "C" to take a screenshot
+        # "C" (No recording mode) to take a screenshot
+        #     (Recording mode) Toggle the recording
         #
         # @param self
         # @param win
@@ -223,7 +240,10 @@ class Viewer:
                 self.requestFrame = True
 
             elif key == glfw.KEY_C:
-                self.requestScreenshot = True
+                if (self.recordingFreq == 0):
+                    self.requestScreenshot = True
+                else:
+                    self.autoScreenshot = not self.autoScreenshot
             
             elif (key == glfw.KEY_W) or (key == glfw.KEY_A) \
                or (key == glfw.KEY_S) or (key == glfw.KEY_D):
