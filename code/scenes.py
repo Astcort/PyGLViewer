@@ -71,3 +71,13 @@ def rodTest(viewer):
     rodRenderable = Rod2DRenderable(rod, 0.005)
     viewer.addRenderable(rodRenderable)
     
+
+def loadTest(viewer):
+
+    meshes2D = loadMeshes("./mesh/triangle.obj")
+
+    for mesh in meshes2D:
+        meshRenderable = Mesh2DRenderable(mesh)
+        viewer.addRenderable(meshRenderable)
+
+    

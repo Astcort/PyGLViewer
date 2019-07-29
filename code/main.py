@@ -17,8 +17,9 @@ def main():
     # Loading the scene
     
     #indexedTest(viewer)
-    dynamicTest(viewer)
+    #dynamicTest(viewer)
     rodTest(viewer)
+    loadTest(viewer)
     
     # Main loop
     viewer.run()
