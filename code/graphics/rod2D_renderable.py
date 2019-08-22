@@ -69,7 +69,7 @@ class Rod2DRenderable(Mesh2DRenderable):
 
         # Data
         positions = self.rod.constPositions
-        meshPositions = self.mesh.constPositions
+        meshPositions = self.mesh.positions
 
         currVertex = positions[0:2]
         for vId in range(1, self.rod.nbVertices):
@@ -96,7 +96,7 @@ class Rod2DRenderable(Mesh2DRenderable):
 
         # Data
         colours = self.rod.constColours
-        meshColours = self.mesh.constColours
+        meshColours = self.mesh.colours
 
         # Border case
         col = colours[0:3]
@@ -116,18 +116,18 @@ class Rod2DRenderable(Mesh2DRenderable):
         # @param self
         if (not self.rod.positionsUpdated):
             return
-        self.rod.positionsUpdated = False
         self.updateMeshPositions()
         super().updatePositionsBuffer()
+        self.rod.positionsUpdated = False
         
     def updateColoursBuffer(self):
         ## Update the GPU colour buffer
         # @param self
         if (not self.rod.coloursUpdated):
             return
-        self.rod.coloursUpdated = False
         self.updateMeshColours()
         super().updateColoursBuffer()
+        self.rod.coloursUpdated = False
         
     def __del__(self):
         super().__del__()
