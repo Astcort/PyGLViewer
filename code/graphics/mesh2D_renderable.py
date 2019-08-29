@@ -63,6 +63,8 @@ class Mesh2DRenderable(AbstractRenderable):
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, 0)
         GL.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, 0)
 
+        # Model (scaling) matrix
+        self.modelMatrix = np.identity(4, dtype="float")
 
     def updatePositionsBuffer(self):
         ## Update the GPU colour buffer
@@ -95,7 +97,7 @@ class Mesh2DRenderable(AbstractRenderable):
     
 
 
-    def draw(self, modelMatrix, viewMatrix, projectionMatrix,
+    def draw(self, viewMatrix, projectionMatrix,
              shaderProgram, primitive = GL.GL_TRIANGLES):
         ## Drawing function
         # @param self
@@ -115,7 +117,7 @@ class Mesh2DRenderable(AbstractRenderable):
         GL.glUseProgram(shaderProgram.glId)       
 
         
-        GL.glUniformMatrix4fv(locations["modelMatrix"], 1, True, modelMatrix)
+        GL.glUniformMatrix4fv(locations["modelMatrix"], 1, True, self.modelMatrix)
         GL.glUniformMatrix4fv(locations["viewMatrix"], 1, True, viewMatrix)
         GL.glUniformMatrix4fv(locations["projectionMatrix"], 1, True, projectionMatrix)
 

@@ -75,6 +75,7 @@ def rodTest(viewer):
     @brief Demonstration for a rendering of a rod object
            Specific case, as a rod is essentialy a line, we
            need to generate a mesh over it to git it a thickness
+           + demonstration of the scaling matrix for the rendering
     """
     positions = np.array([-1., 1.,
                           -1., 0.,
@@ -89,6 +90,16 @@ def rodTest(viewer):
     rodRenderable = Rod2DRenderable(rod, thickness = 0.005)
     viewer.addRenderable(rodRenderable)
     
+    positionsScaled = np.array([0., 1.,
+                                0., 0.,
+                                0.5, -0.25],
+                               np.float64)
+    rodScaled = Rod2D(positionsScaled, colours)
+
+    rodRenderableScaled = Rod2DRenderable(rodScaled, thickness = 0.005)
+    rodRenderableScaled.modelMatrix[0, 0] = 2.   # scale in X
+    rodRenderableScaled.modelMatrix[1, 1] = 0.75 # scale in Y
+    viewer.addRenderable(rodRenderableScaled)
 
 def loadTest(viewer):
 

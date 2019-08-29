@@ -16,7 +16,7 @@ from graphics.shader import Shader
 class Viewer:
 
     def __init__(self, width = 1280, height = 960,
-                 bgColor = np.array([0.3, 0.3, 0.3]),
+                 bgColor = np.array([0.6, 0.6, 0.6]),
                  maxFPS = 60,
                  offline = False,
                  frameByFrame = False,
@@ -106,7 +106,6 @@ class Viewer:
         ## Main loop
         # @param self
         
-        modelMatrix = np.identity(4, dtype="float")
         while not glfw.window_should_close(self.window):
 
             try:
@@ -137,7 +136,7 @@ class Viewer:
                     if (not self.offline) or (self.requestDraw):
                         self.requestDraw = False
                         for renderable in self.renderables:
-                            renderable.draw(modelMatrix, viewMatrix, projectionMatrix,
+                            renderable.draw(viewMatrix, projectionMatrix,
                                             self.shaderProgram)
                         glfw.swap_buffers(self.window)
 
