@@ -24,6 +24,10 @@ sudo apt-get install freeglut3 freeglut3-dev mesa-utils python3 python3-setuptoo
 pip3 install numpy Pillow pyassimp==4.1.3 PyOpenGL PyOpenGL-accelerate glfw scipy
 ```
 **Warning:** Be careful with the version of PyAssimp, the latest version (4.1.4) crashes...
+If there is some problem with the Python installation, try :
+```
+python3 -m pip install numpy Pillow pyassimp==4.1.3 PyOpenGL PyOpenGL-accelerate glfw scipy
+```
 
 
 ### Test

@@ -4,7 +4,7 @@
 import numpy as np
 from .rod2D import Rod2D
 
-import pyassimp
+#import pyassimp
 
 ## Class defining a 2D mesh
 class Mesh2D(Rod2D):
@@ -19,9 +19,19 @@ class Mesh2D(Rod2D):
 
         super().__init__(positions, colours)        
         self.indices = np.array(indices, np.int32)
+
+        # Build neighbours list
+        self.neighbours = [ set() for i in range(self.nbVertices)]
+        for i in range(int(self.indices.size / 3)):
+            t = self.indices[3 * i : 3 * i + 3]
+            for j in range(3):
+                self.neighbours[t[j]].add(t[(j + 1) % 3])
+                self.neighbours[t[j]].add(t[(j + 2) % 3])
+        for i in range(self.nbVertices):
+            self.neighbours[i] = list(self.neighbours[i])
     
 
-
+"""
 def loadMeshes(filename):
     ## Loader function
     # @param filename  Path to the file containing the meshes
@@ -46,3 +56,4 @@ def loadMeshes(filename):
 
     pyassimp.release(meshesAssimp)
     return meshes2D
+    """
