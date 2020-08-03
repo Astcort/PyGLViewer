@@ -7,7 +7,7 @@ This is a simple OpenGL viewer designed to have a quick visualization of the res
 
 ## Author 
 
-* [Mickaël LY](https://github.com/Astcort/)
+* [Mickaël LY](https://astcort.github.io/)
 
 ## How to use
 
@@ -15,20 +15,13 @@ This is a simple OpenGL viewer designed to have a quick visualization of the res
 
 * Python3
 * GLFW3
-* Assimp
 * OpenGL
 
 To install them (on Ubuntu) :
 ```
 sudo apt-get install freeglut3 freeglut3-dev mesa-utils python3 python3-setuptools libglfw3-dev libassimp-dev python3-pip
-pip3 install numpy Pillow pyassimp==4.1.3 PyOpenGL PyOpenGL-accelerate glfw scipy
+pip3 install numpy Pillow PyOpenGL PyOpenGL-accelerate glfw scipy
 ```
-**Warning:** Be careful with the version of PyAssimp, the latest version (4.1.4) crashes...
-If there is some problem with the Python installation, try :
-```
-python3 -m pip install numpy Pillow pyassimp==4.1.3 PyOpenGL PyOpenGL-accelerate glfw scipy
-```
-
 
 ### Test
 

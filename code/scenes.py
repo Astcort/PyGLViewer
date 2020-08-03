@@ -100,19 +100,3 @@ def rodTest(viewer):
     rodRenderableScaled.modelMatrix[0, 0] = 2.   # scale in X
     rodRenderableScaled.modelMatrix[1, 1] = 0.75 # scale in Y
     viewer.addRenderable(rodRenderableScaled)
-
-def loadTest(viewer):
-
-    """
-    @brief Demonstration for the loading of any 2D mesh
-           Be careful, the function loadMeshes has been mofified
-           to deal with 2D meshes only (z will be considered to be 0)
-    """
-
-    meshes2D = loadMeshes("./mesh/triangle.obj")
-
-    for mesh in meshes2D:
-        meshRenderable = Mesh2DRenderable(mesh)
-        viewer.addRenderable(meshRenderable)
-
-    
