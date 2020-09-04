@@ -11,7 +11,7 @@ This is a simple OpenGL viewer designed to have a quick visualization of the res
 
 ## How to use
 
-### Dependancies 
+### Dependencies 
 
 * Python3
 * GLFW3

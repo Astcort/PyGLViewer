@@ -1,5 +1,6 @@
 # Custom files
 code/screenshot*.png
+code/solutions*.py
 
 # Emacs files
 *~

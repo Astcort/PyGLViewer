@@ -118,7 +118,7 @@ class Rod2DRenderable(Mesh2DRenderable):
             return
         self.updateMeshPositions()
         super().updatePositionsBuffer()
-        self.rod.positionsUpdated = False
+        self.rod.positionsUpdated = self.mesh.positionsUpdated
         
     def updateColoursBuffer(self):
         ## Update the GPU colour buffer
@@ -127,7 +127,7 @@ class Rod2DRenderable(Mesh2DRenderable):
             return
         self.updateMeshColours()
         super().updateColoursBuffer()
-        self.rod.coloursUpdated = False
+        self.rod.coloursUpdated = self.mesh.coloursUpdated
         
     def __del__(self):
         super().__del__()

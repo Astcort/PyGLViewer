@@ -20,10 +20,12 @@ class Mesh2DRenderable(AbstractRenderable):
         
         self.mesh = mesh
 
+        # Weak protection for the buffers update
+        self.vaoBound = False
         
         # Create the VAO
         self.glId = GL.glGenVertexArrays(1)
-        GL.glBindVertexArray(self.glId)
+        self.bindVAO()
 
         # VBOs
         ## Ugly -- assumes the locations
@@ -59,17 +61,32 @@ class Mesh2DRenderable(AbstractRenderable):
         self.drawArguments = (self.mesh.indices.size, GL.GL_UNSIGNED_INT, None)
 
         # End of the VAO commands -- unbind everything
-        GL.glBindVertexArray(0)
+        self.releaseVAO()
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, 0)
         GL.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, 0)
 
+        
         # Model (scaling) matrix
         self.modelMatrix = np.identity(4, dtype="float")
 
-    def updatePositionsBuffer(self):
-        ## Update the GPU colour buffer
+    def bindVAO(self):
+        ## Bind the VAO of this object 
+        ## Can still be hacked through calls to bindVAO of other objects...
         # @param self
-        if (not self.mesh.positionsUpdated):
+        GL.glBindVertexArray(self.glId)
+        self.vaoBound = True
+
+    def releaseVAO(self):
+        ## Release the VAO of this object
+        # @param self
+        GL.glBindVertexArray(0)
+        self.vaoBound = False
+
+    def updatePositionsBuffer(self):
+        ## Update the GPU positions buffer
+        ## VAO of this object must be bind before calling
+        # @param self
+        if (not self.mesh.positionsUpdated) or (not self.vaoBound):
             return
         self.mesh.positionsUpdated = False
         positionLocation = self.locations["positions"]
@@ -83,8 +100,9 @@ class Mesh2DRenderable(AbstractRenderable):
         
     def updateColoursBuffer(self):
         ## Update the GPU colour buffer
+        ## VAO of this object must be bind before calling
         # @param self
-        if (not self.mesh.coloursUpdated):
+        if (not self.mesh.coloursUpdated) or (not self.vaoBound):
             return
         self.mesh.coloursUpdated = False
         colourLocation = self.locations["colours"]
@@ -121,13 +139,14 @@ class Mesh2DRenderable(AbstractRenderable):
         GL.glUniformMatrix4fv(locations["viewMatrix"], 1, True, viewMatrix)
         GL.glUniformMatrix4fv(locations["projectionMatrix"], 1, True, projectionMatrix)
 
+        self.bindVAO()
+
         self.updatePositionsBuffer()
         self.updateColoursBuffer()
         
-        # Draw
-        GL.glBindVertexArray(self.glId)
         self.drawCommand(primitive, *self.drawArguments)
-        GL.glBindVertexArray(0)
+
+        self.releaseVAO()
             
             
     def __del__(self):
